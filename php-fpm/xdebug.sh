@@ -37,16 +37,18 @@ xdebug_start ()
     # And uncomment line with xdebug extension, thus enabling it
     ON_CMD="sed -i 's/^;zend_extension=/zend_extension=/g' \
                     /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
-
+    ON_CMD2="sed -i 's/xdebug.mode=debug$/xdebug.mode=debug,profile/' /usr/local/etc/php/conf.d/xdebug.ini"
 
     # If running on Windows, need to prepend with winpty :(
     if [[ $OS_TYPE == "MINGW" ]]; then
         winpty docker exec -it $PHP_FPM_CONTAINER bash -c "${ON_CMD}"
+        winpty docker exec -it $PHP_FPM_CONTAINER bash -c "${ON_CMD2}"
         docker restart $PHP_FPM_CONTAINER
         winpty docker exec -it $PHP_FPM_CONTAINER bash -c 'php -v'
 
     else
         docker exec -it $PHP_FPM_CONTAINER bash -c "${ON_CMD}"
+        docker exec -it $PHP_FPM_CONTAINER bash -c "${ON_CMD2}"
         docker restart $PHP_FPM_CONTAINER
         docker exec -it $PHP_FPM_CONTAINER bash -c 'php -v'
     fi
